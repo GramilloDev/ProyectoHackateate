@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel del Encargado | Sistema de Gestión de Insumos</title>
+
+  <style>
+    /* ===== Reinicio básico ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ===== Colores del sistema (mismos que el login) ===== */
+    :root {
+      --color-principal: #d9480f;
+      --color-principal-hover: #b83a0a;
+      --color-fondo: #fff4ec;
+      --color-texto: #2b2b2b;
+      --color-borde: #d8d8d8;
+      --color-tarjeta: #ffffff;
+
+      /* Colores de los avisos */
+      --verde-fondo: #e3f6e8;
+      --verde-texto: #1e7a38;
+      --amarillo-fondo: #fff1c9;
+      --amarillo-texto: #946200;
+      --rojo-fondo: #fde0e0;
+      --rojo-texto: #b42318;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #fff4ec 0%, #ffe0cc 100%);
+      background-attachment: fixed;
+      color: var(--color-texto);
+      min-height: 100vh;
+    }
+
+    /* ===== Barra superior ===== */
+    .header {
+      background: var(--color-principal);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .header h1 {
+      font-size: 1.4rem;
+    }
+
+    .btn-cerrar {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      background: transparent;
+      border: 1.5px solid #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-cerrar:hover {
+      background: #fff;
+      color: var(--color-principal);
+    }
+
+    /* ===== Contenedor principal ===== */
+    .contenido {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ===== Tarjetas (mismo estilo que el login) ===== */
+    .tarjeta {
+      background: var(--color-tarjeta);
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .tarjeta h2 {
+      font-size: 1.3rem;
+      color: var(--color-principal);
+      margin-bottom: 20px;
+    }
+
+    /* ===== Formulario ===== */
+    .formulario {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .campo label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .campo input,
+    .campo select {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 1.5px solid var(--color-borde);
+      border-radius: 8px;
+      background: #fafafa;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .campo input:focus,
+    .campo select:focus {
+      outline: none;
+      border-color: var(--color-principal);
+      box-shadow: 0 0 0 3px rgba(217, 72, 15, 0.18);
+      background: #fff;
+    }
+
+    /* El botón ocupa todo el ancho de la cuadrícula */
+    .btn-guardar {
+      grid-column: 1 / -1;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      background: var(--color-principal);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-guardar:hover {
+      background: var(--color-principal-hover);
+    }
+
+    .btn-guardar:active {
+      transform: scale(0.98);
+    }
+
+    /* ===== Tabla de inventario ===== */
+    .tabla-contenedor {
+      overflow-x: auto; /* permite desplazar la tabla en celulares */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 480px;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--color-principal);
+      background: var(--color-fondo);
+      padding: 12px 14px;
+    }
+
+    thead th:first-child { border-radius: 8px 0 0 8px; }
+    thead th:last-child  { border-radius: 0 8px 8px 0; }
+
+    tbody td {
+      padding: 14px;
+      border-bottom: 1px solid #eee;
+      font-size: 0.95rem;
+    }
+
+    tbody tr:hover {
+      background: #fffaf6;
+    }
+
+    /* ===== Indicadores de aviso ===== */
+    .aviso {
+      display: inline-block;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .aviso.vigente {
+      background: var(--verde-fondo);
+      color: var(--verde-texto);
+    }
+
+    .aviso.por-vencer {
+      background: var(--amarillo-fondo);
+      color: var(--amarillo-texto);
+    }
+
+    .aviso.vencido {
+      background: var(--rojo-fondo);
+      color: var(--rojo-texto);
+    }
+
+    /* ===== Ajuste para pantallas pequeñas ===== */
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.1rem;
+      }
+      .tarjeta {
+        padding: 22px 18px;
+      }
+      .formulario {
+        grid-template-columns: 1fr; /* una sola columna */
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== Barra superior ===== -->
+  <header class="header">
+    <h1>🍽️ Panel del Encargado</h1>
+    <button class="btn-cerrar" type="button">Cerrar sesión</button>
+  </header>
+
+  <main class="contenido">
+
+    <!-- ===== Parte 1: Formulario de registro ===== -->
+    <section class="tarjeta">
+      <h2>Registrar insumo</h2>
+
+      <form class="formulario">
+        <div class="campo">
+          <label for="producto">Producto</label>
+          <input type="text" id="producto" name="producto" placeholder="Ej. Pechuga de pollo">
+        </div>
+
+        <div class="campo">
+          <label for="cantidad">Cantidad</label>
+          <input type="number" id="cantidad" name="cantidad" min="0" step="0.01" placeholder="Ej. 5">
+        </div>
+
+        <div class="campo">
+          <label for="unidad">Unidad</label>
+          <select id="unidad" name="unidad">
+            <option value="kg">kg</option>
+            <option value="litros">litros</option>
+            <option value="piezas">piezas</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="caducidad">Fecha de caducidad</label>
+          <input type="date" id="caducidad" name="caducidad">
+        </div>
+
+        <button type="submit" class="btn-guardar">Guardar Insumo</button>
+      </form>
+    </section>
+
+    <!-- ===== Parte 2: Tabla de inventario y avisos ===== -->
+    <section class="tarjeta">
+      <h2>Inventario actual</h2>
+
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Caducidad</th>
+              <th>Aviso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filas de ejemplo (después se llenarán con datos reales) -->
+            <tr>
+              <td>Arroz</td>
+              <td>20 kg</td>
+              <td>15/03/2027</td>
+              <td><span class="aviso vigente">🟢 Vigente</span></td>
+            </tr>
+            <tr>
+              <td>Leche</td>
+              <td>12 litros</td>
+              <td>12/11/2026</td>
+              <td><span class="aviso por-vencer">🟡 Por vencer</span></td>
+            </tr>
+            <tr>
+              <td>Pechuga de pollo</td>
+              <td>8 kg</td>
+              <td>08/11/2026</td>
+              <td><span class="aviso por-vencer">🟡 Por vencer</span></td>
+            </tr>
+            <tr>
+              <td>Jitomate</td>
+              <td>30 piezas</td>
+              <td>06/11/2026</td>
+              <td><span class="aviso vencido">🔴 Vencido</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>
