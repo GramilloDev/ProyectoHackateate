@@ -1,370 +1,184 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel del Dueño | Sistema de Gestión de Insumos</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>EcoMenu · Panel del Dueño</title>
+<style>
+:root{--primary:#1450B8;--primary-d:#0A2A66;--ink:#0F1B3D;--muted:#4A5675;--line:#C9D3EA;--bg:#F3F6FC;--card:#FFFFFF;
+--bad:#9B1C1C;--bad-bg:#FDE8E8;--ok:#0B5C33;--ok-bg:#E3F5EA;--info-bg:#E8EFFB;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{color-scheme:light}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
 
-  <style>
-    /* ===== Reinicio básico ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* Dashboard: encabezado + fila superior + fila inferior */
+.screen{height:100%;display:grid;grid-template-rows:auto auto 1fr;position:relative}
+header{display:flex;align-items:center;gap:2vw;padding:1.2vh 3vw;background:#fff;border-bottom:1px solid var(--line)}
+.logo{height:clamp(50px,12vh,100px);width:auto;object-fit:contain;mix-blend-mode:multiply}
+header h1{margin:0;font-size:clamp(22px,4.2vh,38px);color:var(--primary-d);letter-spacing:-.01em}
+header p{margin:0 0 0 auto;color:var(--muted);font-size:clamp(13px,2vh,17px)}
 
-    /* ===== Colores del sistema (mismos que las pantallas anteriores) ===== */
-    :root {
-      --color-principal: #d9480f;
-      --color-principal-hover: #b83a0a;
-      --color-fondo: #fff4ec;
-      --color-texto: #2b2b2b;
-      --color-borde: #d8d8d8;
-      --color-tarjeta: #ffffff;
+/* Fila superior: 3 tarjetas */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;padding:2vh 3vw 0}
+.kpi{background:var(--card);border:1.5px solid var(--line);border-left:10px solid var(--primary);border-radius:14px;padding:clamp(10px,2vh,20px) clamp(14px,1.8vw,26px);box-shadow:0 2px 10px rgba(20,80,184,.08)}
+.kpi.ok{border-left-color:var(--ok)}
+.kpi.bad{border-left-color:var(--bad)}
+.kpi h2{margin:0;font-size:clamp(14px,2.2vh,19px);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.kpi .v{margin:.4vh 0;font-size:clamp(28px,6vh,56px);font-weight:800;line-height:1.1;color:var(--primary-d)}
+.kpi.ok .v{color:var(--ok)}
+.kpi.bad .v{color:var(--bad)}
+.kpi .d{margin:0;font-size:clamp(13px,2vh,17px);color:var(--muted);font-weight:600}
 
-      --verde-fondo: #e3f6e8;
-      --verde-texto: #1e7a38;
-      --amarillo-fondo: #fff1c9;
-      --amarillo-texto: #946200;
-      --rojo-fondo: #fde0e0;
-      --rojo-texto: #b42318;
-    }
+/* Fila inferior: mitad y mitad */
+.bottom{min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:1.6vw;padding:2vh 3vw;padding-bottom:calc(2vh + clamp(34px,7vh,60px))}
+.card{min-height:0;display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:clamp(12px,2.2vh,24px);box-shadow:0 2px 10px rgba(20,80,184,.08)}
+.card h2{margin:0 0 1.2vh;font-size:clamp(20px,3.4vh,30px);color:var(--primary-d)}
+.card .sub{margin:0 0 1.4vh;color:var(--muted);font-size:clamp(13px,2vh,17px)}
 
-    body {
-      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-      background: linear-gradient(135deg, #fff4ec 0%, #ffe0cc 100%);
-      background-attachment: fixed;
-      color: var(--color-texto);
-      min-height: 100vh;
-    }
+/* Recomendaciones IA */
+.tag{align-self:flex-start;background:var(--primary);color:#fff;font-weight:800;font-size:clamp(12px,1.8vh,15px);padding:3px 12px;border-radius:999px;margin-bottom:1vh;letter-spacing:.04em}
+.recs{flex:1;min-height:0;overflow-y:auto;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1.2vh}
+.rec{background:var(--info-bg);border-radius:10px;padding:1.2vh 14px;border-left:6px solid var(--primary)}
+.rec b{display:block;font-size:clamp(16px,2.6vh,22px);color:var(--primary-d)}
+.rec span{display:block;margin-top:2px;font-size:clamp(13px,2vh,17px);color:var(--ink);line-height:1.35}
+.chip{display:inline-block;margin-top:5px;padding:2px 10px;border-radius:999px;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok);font-size:clamp(12px,1.8vh,15px);font-weight:700}
+.chip.s{background:#FFF1D6;color:#7A4A00;border-color:#7A4A00}
 
-    /* ===== Barra superior ===== */
-    .header {
-      background: var(--color-principal);
-      color: #fff;
-      padding: 14px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-    }
+/* Crear usuario */
+form{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-between;gap:1.4vh}
+label{display:block;font-weight:700;font-size:clamp(14px,2.2vh,18px);margin-bottom:5px}
+select,input{width:100%;height:clamp(40px,6vh,52px);padding:0 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:clamp(15px,2.4vh,18px);color:var(--ink);background:#fff}
+select:focus,input:focus{outline:3px solid #9DBBF0;border-color:var(--primary)}
+.pw{position:relative}
+.toggle{position:absolute;right:6px;bottom:4px;height:clamp(32px,4.8vh,42px);padding:0 10px;border:0;background:none;color:var(--primary);font:inherit;font-weight:700;font-size:14px;cursor:pointer;border-radius:8px}
+.toggle:hover{background:#EAF1FD}
+.btn{height:clamp(44px,6.6vh,56px);border:0;border-radius:10px;background:var(--primary);color:#fff;font:inherit;font-size:clamp(16px,2.6vh,20px);font-weight:800;cursor:pointer}
+.btn:hover{background:var(--primary-d)}
+.btn:focus-visible{outline:3px solid #9DBBF0;outline-offset:2px}
+.msg{min-height:1.3em;margin:0;font-size:clamp(13px,2vh,16px);font-weight:700;color:var(--bad)}
+.msg.ok{color:var(--ok)}
 
-    .header h1 {
-      font-size: 1.4rem;
-    }
+/* BuenaMesa discreto, esquina inferior derecha */
+.bm{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));height:clamp(34px,7vh,60px);width:auto;opacity:.9;mix-blend-mode:multiply;pointer-events:none}
 
-    .btn-cerrar {
-      padding: 8px 14px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #fff;
-      background: transparent;
-      border: 1.5px solid #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .btn-cerrar:hover {
-      background: #fff;
-      color: var(--color-principal);
-    }
-
-    /* ===== Contenedor principal ===== */
-    .contenido {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 28px 20px 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    /* ===== Tarjetas generales ===== */
-    .tarjeta {
-      background: var(--color-tarjeta);
-      padding: 28px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-    }
-
-    .tarjeta h2 {
-      font-size: 1.3rem;
-      color: var(--color-principal);
-      margin-bottom: 20px;
-    }
-
-    /* ===== Sección financiera (3 tarjetas horizontales) ===== */
-    .metricas {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .metrica {
-      background: var(--color-tarjeta);
-      padding: 22px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-      border-top: 5px solid var(--color-principal);
-    }
-
-    .metrica.ganancia { border-top-color: var(--verde-texto); }
-    .metrica.merma    { border-top-color: var(--rojo-texto); }
-
-    .metrica .icono {
-      font-size: 1.8rem;
-      margin-bottom: 6px;
-    }
-
-    .metrica .etiqueta {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #777;
-      margin-bottom: 6px;
-    }
-
-    .metrica .valor {
-      font-size: 1.9rem;
-      font-weight: 700;
-      line-height: 1.1;
-    }
-
-    .metrica.ganancia .valor { color: var(--verde-texto); }
-    .metrica.merma .valor    { color: var(--rojo-texto); }
-
-    .metrica .detalle {
-      margin-top: 8px;
-      font-size: 0.8rem;
-      color: #999;
-    }
-
-    /* ===== Recuadro de IA (destacado) ===== */
-    .tarjeta-ia {
-      background: linear-gradient(180deg, #fffaf6 0%, #ffffff 100%);
-      border: 2.5px solid var(--color-principal);
-      box-shadow: 0 10px 30px rgba(217, 72, 15, 0.22);
-    }
-
-    .ia-encabezado {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .ia-encabezado h2 {
-      margin-bottom: 0;
-    }
-
-    .ia-etiqueta {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--color-principal);
-      background: var(--color-fondo);
-      padding: 5px 12px;
-      border-radius: 999px;
-    }
-
-    .recomendaciones {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .recomendacion {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-    }
-
-    .recomendacion .emoji {
-      font-size: 1.3rem;
-    }
-
-    .recomendacion.sugerencia {
-      background: var(--verde-fondo);
-      border-left: 5px solid var(--verde-texto);
-    }
-
-    .recomendacion.alerta {
-      background: var(--amarillo-fondo);
-      border-left: 5px solid var(--amarillo-texto);
-    }
-
-    .recomendacion.oportunidad {
-      background: var(--color-fondo);
-      border-left: 5px solid var(--color-principal);
-    }
-
-    /* ===== Gestión de usuarios ===== */
-    .formulario {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-    }
-
-    .campo label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 6px;
-    }
-
-    .campo input,
-    .campo select {
-      width: 100%;
-      padding: 12px 14px;
-      font-size: 1rem;
-      font-family: inherit;
-      border: 1.5px solid var(--color-borde);
-      border-radius: 8px;
-      background: #fafafa;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .campo input:focus,
-    .campo select:focus {
-      outline: none;
-      border-color: var(--color-principal);
-      box-shadow: 0 0 0 3px rgba(217, 72, 15, 0.18);
-      background: #fff;
-    }
-
-    .btn-crear {
-      grid-column: 1 / -1;
-      padding: 14px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-      background: var(--color-principal);
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    .btn-crear:hover {
-      background: var(--color-principal-hover);
-    }
-
-    .btn-crear:active {
-      transform: scale(0.98);
-    }
-
-    /* ===== Ajustes para pantallas pequeñas ===== */
-    @media (max-width: 800px) {
-      .metricas {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .header h1 {
-        font-size: 1.1rem;
-      }
-      .tarjeta {
-        padding: 22px 18px;
-      }
-      .formulario {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+@media (max-width:800px){
+header p{display:none}
+.kpis,.bottom{gap:1.2vw;padding-left:2vw;padding-right:2vw}
+.kpi{padding:8px 10px}
+}
+</style>
 </head>
-
 <body>
+<div class="screen">
 
-  <!-- ===== Barra superior ===== -->
-  <header class="header">
-    <h1>🍽️ Panel del Dueño</h1>
-    <button class="btn-cerrar" type="button">Cerrar sesión</button>
+  <header>
+    <img class="logo" src="ecomenu.jpg" alt="EcoMenu">
+    <h1>Panel del Dueño</h1>
+    <p>Resumen del mes · cifras en MXN</p>
   </header>
 
-  <main class="contenido">
+  <!-- FILA SUPERIOR -->
+  <section class="kpis">
+    <article class="kpi">
+      <h2>Inversión</h2>
+      <p class="v" id="k1">$48,500</p>
+      <p class="d">Compra de insumos del mes</p>
+    </article>
+    <article class="kpi ok">
+      <h2>Ganancias</h2>
+      <p class="v" id="k2">$72,300</p>
+      <p class="d">▲ 18% vs. mes anterior</p>
+    </article>
+    <article class="kpi bad">
+      <h2>Pérdidas por merma</h2>
+      <p class="v" id="k3">$3,150</p>
+      <p class="d">▼ 6.5% de la inversión · producto caducado</p>
+    </article>
+  </section>
 
-    <!-- ===== Sección financiera (datos simulados) ===== -->
-    <section class="metricas">
-      <article class="metrica">
-        <div class="icono">🛒</div>
-        <div class="etiqueta">Inversión en Insumos</div>
-        <div class="valor">$18,500</div>
-        <div class="detalle">Este mes</div>
-      </article>
+  <!-- FILA INFERIOR -->
+  <section class="bottom">
 
-      <article class="metrica ganancia">
-        <div class="icono">💰</div>
-        <div class="etiqueta">Ganancias</div>
-        <div class="valor">$42,300</div>
-        <div class="detalle">Este mes</div>
-      </article>
-
-      <article class="metrica merma">
-        <div class="icono">📉</div>
-        <div class="etiqueta">Dinero perdido por mermas</div>
-        <div class="valor">$1,250</div>
-        <div class="detalle">Este mes</div>
-      </article>
-    </section>
-
-    <!-- ===== Recomendaciones de IA (Gemini) ===== -->
-    <section class="tarjeta tarjeta-ia">
-      <div class="ia-encabezado">
-        <h2>✨ Recomendaciones de IA</h2>
-        <span class="ia-etiqueta">Con tecnología de Gemini</span>
-      </div>
-
-      <ul class="recomendaciones">
-        <li class="recomendacion alerta">
-          <span class="emoji">⚠️</span>
-          <span><strong>Atención:</strong> La Ensalada César tiene bajas ventas, considera ajustar compras.</span>
+    <article class="card">
+      <span class="tag">RECOMENDACIONES IA</span>
+      <h2>Rentabilidad y temporada</h2>
+      <!-- Contenido de ejemplo: reemplázalo con la respuesta de tu IA -->
+      <ul class="recs">
+        <li class="rec">
+          <b>Promociona la crema de calabaza</b>
+          <span>La calabaza está en temporada y su costo baja. Margen estimado del 68%.</span>
+          <span class="chip">Mayor margen</span>
         </li>
-        <li class="recomendacion sugerencia">
-          <span class="emoji">💡</span>
-          <span><strong>Sugerencia de temporada:</strong> Invierte en insumos para Caldo Tlalpeño.</span>
+        <li class="rec">
+          <b>Pozole rojo como platillo del día</b>
+          <span>Alta demanda en esta época y aprovecha el pollo próximo a caducar.</span>
+          <span class="chip s">Temporada</span>
         </li>
-        <li class="recomendacion oportunidad">
-          <span class="emoji">📈</span>
-          <span><strong>Oportunidad:</strong> Los platillos con pollo generan el mayor margen de ganancia. Considera destacarlos en el menú.</span>
+        <li class="rec">
+          <b>Reduce las compras de lácteos</b>
+          <span>La leche genera la mayor merma. Compra en lotes más pequeños y más seguidos.</span>
+          <span class="chip">Ahorro estimado $900/mes</span>
+        </li>
+        <li class="rec">
+          <b>Ofrece ponche y buñuelos</b>
+          <span>Postres de bajo costo y de temporada, ideales para subir el ticket promedio.</span>
+          <span class="chip s">Temporada</span>
         </li>
       </ul>
-    </section>
+    </article>
 
-    <!-- ===== Gestión de usuarios ===== -->
-    <section class="tarjeta">
-      <h2>Gestión de usuarios</h2>
-
-      <form class="formulario">
-        <div class="campo">
-          <label for="nuevo-usuario">Nombre de usuario</label>
-          <input type="text" id="nuevo-usuario" name="nuevo-usuario" placeholder="Ej. maria.lopez" autocomplete="off">
-        </div>
-
-        <div class="campo">
-          <label for="nueva-password">Contraseña</label>
-          <input type="password" id="nueva-password" name="nueva-password" placeholder="Crea una contraseña" autocomplete="new-password">
-        </div>
-
-        <div class="campo">
-          <label for="nuevo-rol">Rol</label>
-          <select id="nuevo-rol" name="nuevo-rol">
-            <option value="encargado">Encargado</option>
-            <option value="empleado">Empleado</option>
+    <article class="card">
+      <h2>Crear usuario</h2>
+      <p class="sub">Gestin de Áreas.</p>
+      <form id="f" novalidate>
+        <div>
+          <label for="rol">Rol</label>
+          <select id="rol">
+            <option value="">Selecciona un rol</option>
+            <option>Encargado</option>
+            <option>Empleado (Cocina)</option>
           </select>
         </div>
-
-        <button type="submit" class="btn-crear">Crear cuenta</button>
+        <div>
+          <label for="nom">Nombre</label>
+          <input id="nom" type="text" autocomplete="off" placeholder="Nombre completo">
+        </div>
+        <div class="pw">
+          <label for="pw">Contraseña</label>
+          <input id="pw" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+          <button class="toggle" type="button" id="t" aria-label="Mostrar u ocultar contraseña">Mostrar</button>
+        </div>
+        <p class="msg" id="m" role="alert"></p>
+        <button class="btn" type="submit">Crear usuario</button>
       </form>
-    </section>
+    </article>
 
-  </main>
+  </section>
 
+  <img class="bm" src="buenamesa.jpg" alt="BuenaMesa">
+</div>
+
+<script>
+var f=document.getElementById('f'),rol=document.getElementById('rol'),nom=document.getElementById('nom'),
+    pw=document.getElementById('pw'),m=document.getElementById('m'),t=document.getElementById('t');
+
+t.addEventListener('click',function(){
+  var s=pw.type==='password';pw.type=s?'text':'password';t.textContent=s?'Ocultar':'Mostrar';
+});
+
+f.addEventListener('submit',function(e){
+  e.preventDefault();m.className='msg';
+  if(!rol.value){m.textContent='Selecciona un rol.';rol.focus();return;}
+  if(nom.value.trim().length<3){m.textContent='Escribe el nombre completo.';nom.focus();return;}
+  if(pw.value.length<8){m.textContent='La contraseña debe tener al menos 8 caracteres.';pw.focus();return;}
+  /* Aquí envía los datos a tu backend */
+  m.className='msg ok';
+  m.textContent='Usuario creado: '+nom.value.trim()+' ('+rol.value+').';
+  f.reset();t.textContent='Mostrar';pw.type='password';
+});
+</script>
 </body>
 </html>

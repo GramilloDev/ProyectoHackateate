@@ -1,375 +1,178 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel del Empleado | Sistema de Gestión de Insumos</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>EcoMenu · Panel de Cocina</title>
+<style>
+:root{--primary:#1450B8;--primary-d:#0A2A66;--ink:#0F1B3D;--muted:#3E4A68;--line:#C9D3EA;--bg:#F3F6FC;--card:#FFFFFF;
+--bad:#9B1C1C;--bad-bg:#FDE8E8;--warn:#7A4A00;--warn-bg:#FFF1D6;--ok:#0B5C33;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{color-scheme:light}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
 
-  <style>
-    /* ===== Reinicio básico ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* Estructura: encabezado + 2 columnas 50/50 */
+.screen{height:100%;display:grid;grid-template-rows:auto 1fr;position:relative}
+header{display:flex;align-items:center;gap:2vw;padding:1.5vh 3vw;background:#fff;border-bottom:1px solid var(--line)}
+.logo{height:clamp(56px,13vh,110px);width:auto;object-fit:contain;mix-blend-mode:multiply}
+header h1{margin:0;font-size:clamp(26px,5vh,46px);color:var(--primary-d);letter-spacing:-.01em}
+main{min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:2vw;padding:2.5vh 3vw;padding-bottom:calc(2.5vh + clamp(34px,7vh,60px))}
+.col{min-height:0;display:flex;flex-direction:column;gap:2.2vh}
 
-    /* ===== Colores del sistema (mismos que las pantallas anteriores) ===== */
-    :root {
-      --color-principal: #d9480f;
-      --color-principal-hover: #b83a0a;
-      --color-fondo: #fff4ec;
-      --color-texto: #2b2b2b;
-      --color-borde: #d8d8d8;
-      --color-tarjeta: #ffffff;
+/* Tarjetas */
+.card{border-radius:16px;padding:clamp(14px,2.6vh,28px);border:1.5px solid var(--line);background:var(--card);box-shadow:0 2px 10px rgba(20,80,184,.08)}
+.card h2{margin:0 0 1.4vh;font-size:clamp(22px,3.8vh,34px);line-height:1.15}
 
-      /* Colores de los avisos */
-      --amarillo-fondo: #fff1c9;
-      --amarillo-texto: #946200;
-      --rojo-fondo: #fde0e0;
-      --rojo-texto: #b42318;
-    }
+/* Menú sugerido por IA */
+.ia{background:var(--primary);color:#fff;border-color:var(--primary-d);flex:0 0 auto}
+.ia .tag{display:inline-block;background:#fff;color:var(--primary-d);font-weight:800;font-size:clamp(13px,2vh,18px);padding:4px 12px;border-radius:999px;margin-bottom:1.2vh;letter-spacing:.04em}
+.ia ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1.2vh}
+.ia li{font-size:clamp(20px,3.5vh,32px);font-weight:700;line-height:1.2}
+.ia li span{display:block;font-size:clamp(13px,2vh,18px);font-weight:500;opacity:.95}
+.ia .nota{margin:1.6vh 0 0;padding-top:1.2vh;border-top:1px solid rgba(255,255,255,.45);font-size:clamp(14px,2.2vh,20px)}
 
-    body {
-      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-      background: linear-gradient(135deg, #fff4ec 0%, #ffe0cc 100%);
-      background-attachment: fixed;
-      color: var(--color-texto);
-      min-height: 100vh;
-    }
+/* Insumos por agotarse */
+.low{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--warn-bg);border-color:#E0A526}
+.low h2{color:var(--warn)}
+.lowlist{flex:1;min-height:0;overflow-y:auto;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1.2vh}
+.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:1.2vh 14px;border-radius:10px;background:#fff;border-left:10px solid var(--warn);font-size:clamp(18px,3vh,28px);font-weight:700}
+.item.bad{border-left-color:var(--bad);background:var(--bad-bg)}
+.item small{display:block;font-size:clamp(12px,1.8vh,16px);font-weight:500;color:var(--muted)}
+.badge{padding:4px 12px;border-radius:999px;font-size:clamp(13px,2vh,18px);font-weight:800;color:#fff;background:var(--warn);white-space:nowrap}
+.item.bad .badge{background:var(--bad)}
+.ok-msg{font-size:clamp(18px,3vh,26px);color:var(--ok);font-weight:700;margin:0}
 
-    /* ===== Barra superior ===== */
-    .header {
-      background: var(--color-principal);
-      color: #fff;
-      padding: 14px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-    }
+/* Reportar consumo */
+.op{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(12px,2.6vh,28px)}
+.op h2{font-size:clamp(26px,4.6vh,42px);color:var(--primary-d);margin:0}
+.hint{margin:0;color:var(--muted);font-size:clamp(15px,2.3vh,22px)}
+label{display:block;font-weight:700;font-size:clamp(18px,2.9vh,26px);margin-bottom:8px}
+select,input{width:100%;height:clamp(54px,8.5vh,84px);padding:0 16px;border:2px solid var(--line);border-radius:12px;font:inherit;font-size:clamp(20px,3.4vh,32px);color:var(--ink);background:#fff}
+select:focus,input:focus{outline:4px solid #9DBBF0;border-color:var(--primary)}
+.qty{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+.unit{height:clamp(54px,8.5vh,84px);display:flex;align-items:center;padding:0 18px;border-radius:12px;background:#E8EFFB;color:var(--primary-d);font-weight:800;font-size:clamp(20px,3.4vh,32px)}
+.btn{height:clamp(64px,10.5vh,100px);border:0;border-radius:14px;background:var(--primary);color:#fff;font:inherit;font-size:clamp(24px,4.2vh,40px);font-weight:800;cursor:pointer}
+.btn:hover{background:var(--primary-d)}
+.btn:focus-visible{outline:4px solid #9DBBF0;outline-offset:3px}
+.msg{min-height:1.4em;margin:0;font-size:clamp(16px,2.6vh,24px);font-weight:700;color:var(--bad)}
+.msg.ok{color:var(--ok)}
 
-    .header h1 {
-      font-size: 1.4rem;
-    }
+/* BuenaMesa discreto, esquina inferior derecha */
+.bm{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));height:clamp(34px,7vh,60px);width:auto;opacity:.9;mix-blend-mode:multiply;pointer-events:none}
 
-    .btn-cerrar {
-      padding: 8px 14px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #fff;
-      background: transparent;
-      border: 1.5px solid #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .btn-cerrar:hover {
-      background: #fff;
-      color: var(--color-principal);
-    }
-
-    /* ===== Contenedor principal (angosto: vista rápida) ===== */
-    .contenido {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 28px 20px 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    /* ===== Tarjetas ===== */
-    .tarjeta {
-      background: var(--color-tarjeta);
-      padding: 28px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-    }
-
-    .tarjeta h2 {
-      font-size: 1.3rem;
-      color: var(--color-principal);
-      margin-bottom: 20px;
-    }
-
-    /* ===== Menú del Día por IA (tarjeta grande y llamativa) ===== */
-    .menu-ia {
-      background: linear-gradient(135deg, #e8590c 0%, #d9480f 60%, #b83a0a 100%);
-      color: #fff;
-      padding: 32px 28px;
-      border-radius: 16px;
-      border: 3px solid #ffd8bf;
-      box-shadow: 0 12px 34px rgba(217, 72, 15, 0.4);
-    }
-
-    .menu-ia .ia-etiqueta {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--color-principal);
-      background: #fff;
-      padding: 5px 12px;
-      border-radius: 999px;
-      margin-bottom: 14px;
-    }
-
-    .menu-ia .titulo {
-      font-size: 1rem;
-      font-weight: 600;
-      opacity: 0.95;
-      margin-bottom: 6px;
-    }
-
-    .menu-ia .platillo {
-      font-size: 2.2rem;
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 14px;
-    }
-
-    .menu-ia .motivo {
-      font-size: 1.05rem;
-      line-height: 1.45;
-      margin-bottom: 18px;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .chip {
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--color-principal);
-      font-size: 0.9rem;
-      font-weight: 700;
-      padding: 7px 14px;
-      border-radius: 999px;
-    }
-
-    /* ===== Insumos por agotarse (advertencia) ===== */
-    .tarjeta-agotarse {
-      background: #fffdf5;
-      border: 2px solid #f1c453;
-      border-left: 8px solid var(--amarillo-texto);
-      box-shadow: 0 10px 30px rgba(148, 98, 0, 0.15);
-    }
-
-    .tarjeta-agotarse h2 {
-      color: var(--amarillo-texto);
-      margin-bottom: 6px;
-    }
-
-    .agotarse-subtitulo {
-      font-size: 0.95rem;
-      color: #777;
-      margin-bottom: 18px;
-    }
-
-    .lista-agotarse {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .lista-agotarse li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    /* Rojo = queda muy poco, amarillo = quedan pocas unidades */
-    .lista-agotarse li.critico {
-      background: var(--rojo-fondo);
-      border-left: 5px solid var(--rojo-texto);
-    }
-
-    .lista-agotarse li.bajo {
-      background: var(--amarillo-fondo);
-      border-left: 5px solid var(--amarillo-texto);
-    }
-
-    .queda {
-      font-size: 0.85rem;
-      font-weight: 700;
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: #fff;
-      white-space: nowrap;
-    }
-
-    .critico .queda { color: var(--rojo-texto); }
-    .bajo .queda    { color: var(--amarillo-texto); }
-
-    /* ===== Formulario de consumo ===== */
-    .formulario {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .campo label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-    }
-
-    .campo input,
-    .campo select {
-      width: 100%;
-      padding: 14px;
-      font-size: 1.05rem;
-      font-family: inherit;
-      border: 1.5px solid var(--color-borde);
-      border-radius: 8px;
-      background: #fafafa;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .campo input:focus,
-    .campo select:focus {
-      outline: none;
-      border-color: var(--color-principal);
-      box-shadow: 0 0 0 3px rgba(217, 72, 15, 0.18);
-      background: #fff;
-    }
-
-    /* Cantidad + unidad en la misma fila */
-    .cantidad-fila {
-      display: flex;
-      gap: 12px;
-    }
-
-    .cantidad-fila input  { flex: 2; }
-    .cantidad-fila select { flex: 1; }
-
-    /* ===== Botón grande ===== */
-    .btn-reportar {
-      width: 100%;
-      padding: 18px;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #fff;
-      background: var(--color-principal);
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    .btn-reportar:hover {
-      background: var(--color-principal-hover);
-    }
-
-    .btn-reportar:active {
-      transform: scale(0.98);
-    }
-
-    /* ===== Ajuste para celulares ===== */
-    @media (max-width: 600px) {
-      .header h1 {
-        font-size: 1rem;
-      }
-      .tarjeta {
-        padding: 22px 18px;
-      }
-      .menu-ia {
-        padding: 24px 20px;
-      }
-      .menu-ia .platillo {
-        font-size: 1.7rem;
-      }
-    }
-  </style>
+@media (max-width:800px){
+main{gap:1.5vw;padding-left:2vw;padding-right:2vw}
+.item{flex-direction:column;align-items:flex-start}
+}
+</style>
 </head>
-
 <body>
+<div class="screen">
 
-  <!-- ===== Barra superior ===== -->
-  <header class="header">
-    <h1>🍽️ Panel del Empleado - Cocina</h1>
-    <button class="btn-cerrar" type="button">Cerrar sesión</button>
+  <header>
+    <img class="logo" src="ecomenu.jpg" alt="EcoMenu">
+    <h1>Panel de Cocina</h1>
   </header>
 
-  <main class="contenido">
+  <main>
+    <!-- IZQUIERDA: alertas y sugerencias -->
+    <section class="col">
+      <article class="card ia">
+        <span class="tag">SUGERIDO POR IA</span>
+        <h2>Menú del día</h2>
+        <!-- Contenido de ejemplo: reemplázalo con la respuesta de tu IA -->
+        <ul>
+          <li>Crema de verduras<span>Aprovecha zanahoria y crema próximas a caducar</span></li>
+          <li>Pollo al horno con arroz<span>Usa pechuga de pollo antes de que caduque</span></li>
+          <li>Arroz con leche<span>Aprovecha la leche con menor vida útil</span></li>
+        </ul>
+        <p class="nota">Menos desperdicio: este menú prioriza los insumos que caducan primero.</p>
+      </article>
 
-    <!-- ===== Menú del Día por IA ===== -->
-    <section class="menu-ia">
-      <span class="ia-etiqueta">✨ Generado por IA · Gemini</span>
-      <p class="titulo">Menú sugerido para hoy</p>
-      <h2 class="platillo">🍗 Fajitas de pollo</h2>
-      <p class="motivo">La pechuga y el pimiento vencen mañana. Cocínalos hoy para no desperdiciarlos.</p>
-
-      <div class="chips">
-        <span class="chip">🍗 Pechuga de pollo</span>
-        <span class="chip">🫑 Pimiento</span>
-      </div>
+      <article class="card low">
+        <h2>⚠ Insumos por agotarse</h2>
+        <ul class="lowlist" id="low"></ul>
+      </article>
     </section>
 
-    <!-- ===== Insumos por agotarse ===== -->
-    <section class="tarjeta tarjeta-agotarse">
-      <h2>⚠️ Insumos por agotarse</h2>
-      <p class="agotarse-subtitulo">Tenlos en cuenta antes de empezar a cocinar.</p>
-
-      <ul class="lista-agotarse">
-        <li class="critico">
-          <span>🍅 Tomate</span>
-          <span class="queda">Queda 1 kg</span>
-        </li>
-        <li class="bajo">
-          <span>🍔 Pan para hamburguesa</span>
-          <span class="queda">Quedan 5 piezas</span>
-        </li>
-      </ul>
-    </section>
-
-    <!-- ===== Reporte de consumo ===== -->
-    <section class="tarjeta">
-      <h2>Reporte de consumo</h2>
-
-      <form class="formulario">
-        <div class="campo">
-          <label for="insumo">Insumo utilizado</label>
-          <select id="insumo" name="insumo">
-            <option value="" disabled selected>Selecciona un insumo</option>
-            <option value="pollo">Pechuga de pollo</option>
-            <option value="pimiento">Pimiento</option>
-            <option value="tomate">Tomate</option>
-            <option value="pan">Pan para hamburguesa</option>
-            <option value="leche">Leche</option>
-            <option value="queso">Queso panela</option>
-            <option value="arroz">Arroz</option>
-            <option value="jitomate">Jitomate</option>
-          </select>
+    <!-- DERECHA: operación -->
+    <section class="col">
+      <form class="card op" id="f" novalidate>
+        <div>
+          <h2>Reportar consumo</h2>
+          <p class="hint">Registra lo que acabas de usar para mantener el inventario al día.</p>
         </div>
-
-        <div class="campo">
-          <label for="cantidad">Cantidad</label>
-          <div class="cantidad-fila">
-            <input type="number" id="cantidad" name="cantidad" min="0" step="0.01" placeholder="Ej. 2">
-            <select id="unidad" name="unidad" aria-label="Unidad">
-              <option value="kg">kg</option>
-              <option value="litros">litros</option>
-              <option value="piezas">piezas</option>
-            </select>
+        <div>
+          <label for="ins">Insumo</label>
+          <select id="ins"></select>
+          <p class="hint" id="disp"></p>
+        </div>
+        <div class="qty">
+          <div>
+            <label for="cant">Cantidad consumida</label>
+            <input id="cant" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
           </div>
+          <div class="unit" id="uni">kg</div>
         </div>
-
-        <button type="submit" class="btn-reportar">Reportar Consumo</button>
+        <p class="msg" id="m" role="alert"></p>
+        <button class="btn" type="submit">Reportar consumo</button>
       </form>
     </section>
-
   </main>
 
+  <img class="bm" src="buenamesa.jpg" alt="BuenaMesa">
+</div>
+
+<script>
+/* Datos de ejemplo: reemplázalos con tu backend */
+var stock=[
+ {n:'Leche entera',s:2,min:5,u:'L'},
+ {n:'Pechuga de pollo',s:3,min:4,u:'kg'},
+ {n:'Tomate saladette',s:9,min:5,u:'kg'},
+ {n:'Arroz',s:6,min:10,u:'kg'},
+ {n:'Aceite vegetal',s:1,min:4,u:'L'},
+ {n:'Frijol negro',s:20,min:8,u:'kg'},
+ {n:'Queso Oaxaca',s:2,min:2,u:'kg'}
+];
+var sel=document.getElementById('ins'),cant=document.getElementById('cant'),uni=document.getElementById('uni'),
+    disp=document.getElementById('disp'),m=document.getElementById('m'),low=document.getElementById('low'),
+    f=document.getElementById('f');
+
+function num(x){return Math.round(x*100)/100;}
+function llenarSelect(){
+  var cur=sel.value;sel.innerHTML='';
+  stock.forEach(function(p,i){var o=document.createElement('option');o.value=i;o.textContent=p.n;sel.appendChild(o);});
+  if(cur!=='')sel.value=cur;
+}
+function info(){var p=stock[sel.value];uni.textContent=p.u;disp.textContent='Disponible: '+num(p.s)+' '+p.u;}
+function renderLow(){
+  low.innerHTML='';
+  var lista=stock.filter(function(p){return p.s<=p.min;}).sort(function(a,b){return (a.s/a.min)-(b.s/b.min);});
+  if(!lista.length){var li=document.createElement('li');li.className='ok-msg';li.textContent='Todo el inventario está en niveles normales.';low.appendChild(li);return;}
+  lista.forEach(function(p){
+    var crit=p.s<=p.min/2,li=document.createElement('li');
+    li.className='item'+(crit?' bad':'');
+    var d=document.createElement('div');d.textContent=p.n;
+    var sm=document.createElement('small');sm.textContent='Quedan '+num(p.s)+' '+p.u+' (mínimo '+p.min+' '+p.u+')';
+    d.appendChild(sm);
+    var b=document.createElement('span');b.className='badge';b.textContent=crit?'CRÍTICO':'BAJO';
+    li.appendChild(d);li.appendChild(b);low.appendChild(li);
+  });
+}
+sel.addEventListener('change',info);
+f.addEventListener('submit',function(e){
+  e.preventDefault();m.className='msg';
+  var p=stock[sel.value],c=parseFloat(cant.value);
+  if(!c||c<=0){m.textContent='Escribe una cantidad mayor a 0.';return;}
+  if(c>p.s){m.textContent='Solo hay '+num(p.s)+' '+p.u+' disponibles.';return;}
+  p.s=num(p.s-c);
+  m.className='msg ok';m.textContent='Consumo registrado: '+c+' '+p.u+' de '+p.n+'.';
+  cant.value='';info();renderLow();
+});
+llenarSelect();info();renderLow();
+</script>
 </body>
 </html>

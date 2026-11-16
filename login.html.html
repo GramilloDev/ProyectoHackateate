@@ -1,176 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Login | Sistema de Gestión de Insumos</title>
-
-	<style>
-		/* ===== Reinicio básico ===== */
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
-
-		/* ===== Colores del sistema (fáciles de cambiar) ===== */
-		:root {
-			--color-principal: #d9480f;       /* naranja cálido */
-			--color-principal-hover: #b83a0a;
-			--color-fondo: #fff4ec;
-			--color-texto: #2b2b2b;
-			--color-borde: #d8d8d8;
-			--color-tarjeta: #ffffff;
-		}
-
-		/* ===== Fondo y centrado de la pantalla ===== */
-		body {
-			font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-			background: linear-gradient(135deg, #fff4ec 0%, #ffe0cc 100%);
-			color: var(--color-texto);
-			min-height: 100vh;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 20px;
-		}
-
-		/* ===== Tarjeta del login ===== */
-		.login-card {
-			background: var(--color-tarjeta);
-			width: 100%;
-			max-width: 420px;
-			padding: 40px 32px;
-			border-radius: 16px;
-			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-			text-align: center;
-		}
-
-		.icono {
-			font-size: 3rem;
-			margin-bottom: 8px;
-		}
-
-		.login-card h1 {
-			font-size: 1.8rem;
-			line-height: 1.25;
-			margin-bottom: 8px;
-			color: var(--color-principal);
-		}
-
-		.subtitulo {
-			font-size: 0.95rem;
-			color: #777;
-			margin-bottom: 28px;
-		}
-
-		/* ===== Campos del formulario ===== */
-		.campo {
-			text-align: left;
-			margin-bottom: 18px;
-		}
-
-		.campo label {
-			display: block;
-			font-weight: 600;
-			font-size: 0.9rem;
-			margin-bottom: 6px;
-		}
-
-		.campo input,
-		.campo select {
-			width: 100%;
-			padding: 12px 14px;
-			font-size: 1rem;
-			border: 1.5px solid var(--color-borde);
-			border-radius: 8px;
-			background: #fafafa;
-			transition: border-color 0.2s, box-shadow 0.2s;
-		}
-
-		/* Efecto al hacer clic dentro de un campo */
-		.campo input:focus,
-		.campo select:focus {
-			outline: none;
-			border-color: var(--color-principal);
-			box-shadow: 0 0 0 3px rgba(217, 72, 15, 0.18);
-			background: #fff;
-		}
-
-		/* ===== Botón Ingresar ===== */
-		.btn-ingresar {
-			width: 100%;
-			margin-top: 10px;
-			padding: 14px;
-			font-size: 1.1rem;
-			font-weight: 700;
-			color: #fff;
-			background: var(--color-principal);
-			border: none;
-			border-radius: 8px;
-			cursor: pointer;
-			transition: background 0.2s, transform 0.1s;
-		}
-
-		.btn-ingresar:hover {
-			background: var(--color-principal-hover);
-		}
-
-		.btn-ingresar:active {
-			transform: scale(0.98);
-		}
-
-		/* ===== Pie de la tarjeta ===== */
-		.pie {
-			margin-top: 22px;
-			font-size: 0.8rem;
-			color: #999;
-		}
-
-		/* ===== Ajuste para celulares pequeños ===== */
-		@media (max-width: 480px) {
-			.login-card {
-				padding: 30px 20px;
-			}
-			.login-card h1 {
-				font-size: 1.5rem;
-			}
-		}
-	</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>EcoMenu · Iniciar sesión</title>
+<style>
+:root{--primary:#1450B8;--primary-d:#0A2A66;--ink:#0F1B3D;--muted:#4A5675;--line:#C9D3EA;--bg:#F3F6FC;--card:#FFFFFF;--err:#B3261E;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);color-scheme:light}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.screen{height:100%;display:grid;grid-template-columns:1.05fr 1fr;position:relative}
+.brand{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;padding:4vh 4vw;background:linear-gradient(160deg,#FFFFFF 0%,#E8EFFB 100%);border-right:1px solid var(--line)}
+.brand img{width:min(100%,560px);max-height:62vh;object-fit:contain;mix-blend-mode:multiply}
+.brand p{margin:0;max-width:420px;text-align:center;color:var(--muted);font-size:clamp(14px,2vh,18px);line-height:1.5}
+.panel{display:flex;align-items:center;justify-content:center;padding:3vh 4vw;background:var(--card)}
+form{width:min(100%,400px);display:flex;flex-direction:column;gap:clamp(10px,2vh,18px)}
+h1{margin:0;font-size:clamp(24px,4.2vh,34px);color:var(--primary-d);letter-spacing:-.01em}
+.sub{margin:0 0 .5vh;color:var(--muted);font-size:clamp(14px,1.9vh,16px)}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+.field{position:relative}
+input[type=email],input[type=password],input[type=text]{width:100%;height:clamp(42px,6vh,50px);padding:0 14px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px;color:var(--ink);background:#fff}
+input:focus{outline:3px solid #9DBBF0;border-color:var(--primary)}
+.toggle{position:absolute;right:6px;bottom:5px;height:clamp(32px,4.8vh,40px);padding:0 10px;border:0;background:none;color:var(--primary);font:inherit;font-weight:600;font-size:14px;cursor:pointer;border-radius:8px}
+.toggle:hover{background:#EAF1FD}
+.row{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.row label{display:flex;align-items:center;gap:8px;margin:0;font-weight:500}
+.row input{width:18px;height:18px;accent-color:var(--primary)}
+a{color:var(--primary);font-weight:600;text-decoration:none}
+a:hover{text-decoration:underline}
+.btn{height:clamp(44px,6.4vh,52px);border:0;border-radius:10px;background:var(--primary);color:#fff;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--primary-d)}
+.btn:focus-visible{outline:3px solid #9DBBF0;outline-offset:2px}
+.msg{min-height:20px;margin:0;font-size:14px;color:var(--err);font-weight:600}
+.msg.ok{color:#0B6B3A}
+.bm{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));width:clamp(90px,11vw,140px);height:auto;opacity:.9;mix-blend-mode:multiply;pointer-events:none}
+@media (max-width:800px){
+.screen{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+.brand{padding:2vh 4vw;border-right:0;border-bottom:1px solid var(--line)}
+.brand img{max-height:26vh}.brand p{display:none}
+.bm{width:76px}
+}
+</style>
 </head>
-
 <body>
-
-	<main class="login-card">
-		<div class="icono">🍽️</div>
-		<h1>Sistema de Gestión de Insumos</h1>
-		<p class="subtitulo">Inicia sesión para continuar</p>
-
-		<form>
-			<div class="campo">
-				<label for="rol">Rol</label>
-				<select id="rol" name="rol">
-					<option value="dueno">Dueño</option>
-					<option value="encargado">Encargado</option>
-					<option value="empleado">Empleado</option>
-				</select>
-			</div>
-
-			<div class="campo">
-				<label for="usuario">Usuario</label>
-				<input type="text" id="usuario" name="usuario" placeholder="Escribe tu usuario" autocomplete="username">
-			</div>
-
-			<div class="campo">
-				<label for="password">Contraseña</label>
-				<input type="password" id="password" name="password" placeholder="Escribe tu contraseña" autocomplete="current-password">
-			</div>
-
-			<button type="submit" class="btn-ingresar">Ingresar</button>
-		</form>
-
-		<p class="pie">Uso interno del restaurante</p>
-	</main>
-
+<main class="screen">
+  <section class="brand">
+    <img src="ecomenu.jpg" alt="EcoMenu: tu elección, un impacto positivo">
+    <p>Consulta, elige y gestiona tu menú con un impacto positivo en cada plato.</p>
+  </section>
+  <section class="panel">
+    <form id="f" novalidate>
+      <div>
+        <h1>Iniciar sesión</h1>
+        <p class="sub">Ingresa tus credenciales para continuar.</p>
+      </div>
+      <div>
+        <label for="u">Correo electrónico</label>
+        <input id="u" type="email" autocomplete="username" placeholder="nombre@correo.com">
+      </div>
+      <div class="field">
+        <label for="p">Contraseña</label>
+        <input id="p" type="password" autocomplete="current-password" placeholder="Tu contraseña">
+        <button class="toggle" type="button" id="t" aria-label="Mostrar u ocultar contraseña">Mostrar</button>
+      </div>
+      <div class="row">
+        <label><input type="checkbox"> Recordarme</label>
+        <a href="#recuperar">¿Olvidaste tu contraseña?</a>
+      </div>
+      <p class="msg" id="m" role="alert"></p>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+  </section>
+  <img class="bm" src="buenamesa.jpg" alt="BuenaMesa">
+</main>
+<script>
+var f=document.getElementById('f'),u=document.getElementById('u'),p=document.getElementById('p'),m=document.getElementById('m'),t=document.getElementById('t');
+t.addEventListener('click',function(){var s=p.type==='password';p.type=s?'text':'password';t.textContent=s?'Ocultar':'Mostrar';});
+f.addEventListener('submit',function(e){
+  e.preventDefault();m.className='msg';
+  if(!/^\S+@\S+\.\S+$/.test(u.value)){m.textContent='Escribe un correo válido.';u.focus();return;}
+  if(p.value.length<6){m.textContent='La contraseña debe tener al menos 6 caracteres.';p.focus();return;}
+  m.className='msg ok';m.textContent='Acceso correcto (aquí conecta tu autenticación).';
+});
+</script>
 </body>
 </html>
