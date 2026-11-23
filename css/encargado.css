@@ -1,0 +1,15 @@
+.grid-formularios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+#vista-encargado table {
+  table-layout: auto;
+}
+
+#vista-encargado td:last-child,
+#vista-encargado th:last-child {
+  white-space: nowrap;
+}

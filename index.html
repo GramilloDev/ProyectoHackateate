@@ -1,21 +1,331 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Restaurante</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hackateate — Panel Dueño, Encargado y Empleado</title>
+  <link rel="stylesheet" href="css/dueno.css" />
+  <link rel="stylesheet" href="css/encargado.css" />
+  <link rel="stylesheet" href="css/empleado.css" />
 </head>
 <body>
-    <header>
-        <h1>Restaurante - Panel de Pedidos</h1>
-    </header>
-    <main>
-        <section id="menu-section">
-            <h2>Menú Disponible</h2>
-            <!-- Aquí tus colaboradores cargarán los platillos desde la API -->
-        </section>
-    </main>
-    <script src="js/app.js"></script>
+  <main class="contenedor">
+    <section id="vista-login" class="tarjeta">
+      <h1>Acceso al Sistema</h1>
+      <form id="form-login-dueno">
+        <label>
+          Usuario
+          <input type="text" id="login-usuario" value="dueno" required />
+        </label>
+        <label>
+          Contraseña
+          <input type="password" id="login-contrasena" required />
+        </label>
+        <label>
+          Rol
+          <select id="login-rol">
+            <option value="Dueño">Dueño</option>
+            <option value="Encargado">Encargado</option>
+            <option value="Empleado">Empleado</option>
+          </select>
+        </label>
+        <button type="submit">Iniciar sesión</button>
+      </form>
+      <p id="mensaje-login" class="mensaje"></p>
+    </section>
+
+    <section id="vista-dueno" class="tarjeta oculto">
+      <header class="encabezado">
+        <div>
+          <h2>Panel del Dueño</h2>
+          <p id="info-sesion"></p>
+        </div>
+        <button id="btn-cerrar-sesion" type="button" class="secundario">Cerrar sesión</button>
+      </header>
+
+      <div class="filtros">
+        <label>
+          Fecha inicio
+          <input type="date" id="fecha-inicio" />
+        </label>
+        <label>
+          Fecha fin
+          <input type="date" id="fecha-fin" />
+        </label>
+        <button id="btn-cargar-resumen" type="button">Actualizar panel</button>
+      </div>
+
+      <div class="kpis">
+        <article class="kpi">
+          <span>Inversión insumos</span>
+          <strong id="kpi-inversion">$0.00</strong>
+        </article>
+        <article class="kpi">
+          <span>Ventas totales</span>
+          <strong id="kpi-ventas">$0.00</strong>
+        </article>
+        <article class="kpi">
+          <span>Ganancias</span>
+          <strong id="kpi-ganancias">$0.00</strong>
+        </article>
+        <article class="kpi">
+          <span>Pérdida por mermas</span>
+          <strong id="kpi-mermas">$0.00</strong>
+        </article>
+      </div>
+
+      <form id="form-cambiar-area" class="subtarjeta">
+        <h3>Cambiar a vista de área</h3>
+        <div class="fila">
+          <select id="rol-destino">
+            <option value="Encargado">Encargado</option>
+            <option value="Empleado">Empleado</option>
+          </select>
+          <input type="password" id="area-contrasena" placeholder="Confirma contraseña del dueño" required />
+          <button type="submit">Cambiar área</button>
+        </div>
+        <p id="mensaje-area" class="mensaje"></p>
+      </form>
+
+      <div class="grid-tablas">
+        <div class="subtarjeta">
+          <h3>Ventas por platillo</h3>
+          <table>
+            <thead>
+              <tr><th>Platillo</th><th>Cantidad</th><th>Total</th></tr>
+            </thead>
+            <tbody id="tabla-ventas-platillo"></tbody>
+          </table>
+        </div>
+
+        <div class="subtarjeta">
+          <h3>Stock de insumos</h3>
+          <table>
+            <thead>
+              <tr><th>Insumo</th><th>Stock / Cantidad</th></tr>
+            </thead>
+            <tbody id="tabla-stock-insumos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-tablas">
+        <div class="subtarjeta">
+          <h3>Insumos por agotarse</h3>
+          <table>
+            <thead>
+              <tr><th>Insumo</th><th>Cantidad</th></tr>
+            </thead>
+            <tbody id="tabla-por-agotarse"></tbody>
+          </table>
+        </div>
+
+        <div class="subtarjeta">
+          <h3>Próximos a vencer</h3>
+          <table>
+            <thead>
+              <tr><th>Insumo</th><th>Caducidad</th></tr>
+            </thead>
+            <tbody id="tabla-proximos-vencer"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="vista-encargado" class="tarjeta oculto">
+      <header class="encabezado">
+        <div>
+          <h2>Panel del Encargado</h2>
+          <p id="info-sesion-encargado"></p>
+        </div>
+        <div class="fila">
+          <button id="btn-refrescar-encargado" type="button">Actualizar inventario</button>
+          <button id="btn-cerrar-sesion-encargado" type="button" class="secundario">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <div class="grid-formularios">
+        <form id="form-registrar-entrada" class="subtarjeta">
+          <h3>Registrar entrada de insumo</h3>
+          <label>
+            Nombre del producto
+            <input type="text" id="entrada-producto" placeholder="Ej. Tomate" required />
+          </label>
+          <div class="fila">
+            <label>
+              ID Unidad
+              <input type="number" id="entrada-unidad" value="1" min="1" required />
+            </label>
+            <label>
+              Cantidad
+              <input type="number" id="entrada-cantidad" step="0.01" min="0.01" required />
+            </label>
+          </div>
+          <div class="fila">
+            <label>
+              Fecha caducidad
+              <input type="date" id="entrada-caducidad" />
+            </label>
+            <label>
+              Costo unitario
+              <input type="number" id="entrada-costo" step="0.01" min="0" value="0" />
+            </label>
+          </div>
+          <button type="submit">Guardar entrada</button>
+          <p id="mensaje-entrada" class="mensaje"></p>
+        </form>
+
+        <form id="form-registrar-consumo" class="subtarjeta">
+          <h3>Registrar consumo de insumo</h3>
+          <label>
+            Insumo
+            <select id="consumo-insumo" required></select>
+          </label>
+          <div class="fila">
+            <label>
+              Cantidad consumida
+              <input type="number" id="consumo-cantidad" step="0.01" min="0.01" required />
+            </label>
+            <label>
+              ID Unidad
+              <input type="number" id="consumo-unidad" value="1" min="1" required />
+            </label>
+          </div>
+          <button type="submit">Registrar consumo</button>
+          <p id="mensaje-consumo" class="mensaje"></p>
+        </form>
+      </div>
+
+      <div class="grid-tablas">
+        <div class="subtarjeta">
+          <h3>Stock actual de insumos</h3>
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Insumo</th><th>Disponible</th></tr>
+            </thead>
+            <tbody id="enc-tabla-stock"></tbody>
+          </table>
+        </div>
+
+        <div class="subtarjeta">
+          <h3>Inventario detallado</h3>
+          <table>
+            <thead>
+              <tr><th>Producto / Lote</th><th>Cantidad</th><th>Detalle</th></tr>
+            </thead>
+            <tbody id="enc-tabla-inventario"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-tablas">
+        <div class="subtarjeta">
+          <h3>Por agotarse</h3>
+          <table>
+            <thead>
+              <tr><th>Insumo</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="enc-tabla-agotar"></tbody>
+          </table>
+        </div>
+
+        <div class="subtarjeta">
+          <h3>Próximos a vencer</h3>
+          <table>
+            <thead>
+              <tr><th>Insumo</th><th>Caducidad</th></tr>
+            </thead>
+            <tbody id="enc-tabla-vencer"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="vista-empleado" class="tarjeta oculto">
+      <header class="encabezado">
+        <div>
+          <h2>Panel del Empleado</h2>
+          <p id="info-sesion-empleado"></p>
+        </div>
+        <div class="fila">
+          <button id="btn-refrescar-empleado" type="button">Actualizar datos</button>
+          <button id="btn-cerrar-sesion-empleado" type="button" class="secundario">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <div class="grid-formularios">
+        <form id="form-registrar-venta" class="subtarjeta">
+          <h3>Registrar venta de platillo</h3>
+          <label>
+            Platillo
+            <select id="venta-platillo" required></select>
+          </label>
+          <div class="fila">
+            <label>
+              Cantidad
+              <input type="number" id="venta-cantidad" step="1" min="1" value="1" required />
+            </label>
+            <label>
+              Fecha
+              <input type="date" id="venta-fecha" />
+            </label>
+          </div>
+          <button type="submit">Registrar venta</button>
+          <p id="mensaje-venta" class="mensaje"></p>
+        </form>
+
+        <form id="form-registrar-merma" class="subtarjeta">
+          <h3>Registrar merma de insumo</h3>
+          <div class="fila">
+            <label>
+              ID Entrada (Lote)
+              <input type="number" id="merma-id-entrada" min="1" placeholder="Ej. 4" required />
+            </label>
+            <label>
+              Cantidad a mermar
+              <input type="number" id="merma-cantidad" step="0.01" min="0.01" required />
+            </label>
+          </div>
+          <label>
+            Motivo
+            <select id="merma-motivo" required>
+              <option value="Vencido">Vencido</option>
+              <option value="Danado">Danado</option>
+              <option value="Desperdiciado">Desperdiciado</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </label>
+          <button type="submit">Registrar merma</button>
+          <p id="mensaje-merma" class="mensaje"></p>
+        </form>
+      </div>
+
+      <div class="grid-tablas">
+        <div class="subtarjeta">
+          <h3>Platillos y ventas</h3>
+          <table>
+            <thead>
+              <tr><th>Platillo</th><th>Unidades</th><th>Margen / Total</th></tr>
+            </thead>
+            <tbody id="emp-tabla-ventas"></tbody>
+          </table>
+        </div>
+
+        <div class="subtarjeta">
+          <h3>Stock disponible de insumos</h3>
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Insumo</th><th>Disponible</th></tr>
+            </thead>
+            <tbody id="emp-tabla-stock"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/dueno.js"></script>
+  <script src="js/encargado.js"></script>
+  <script src="js/empleado.js"></script>
 </body>
 </html>

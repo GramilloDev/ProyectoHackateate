@@ -1,0 +1,12 @@
+#vista-empleado table {
+  table-layout: auto;
+}
+
+#vista-empleado td:last-child,
+#vista-empleado th:last-child {
+  white-space: nowrap;
+}
+
+#vista-empleado form button[type="submit"] {
+  margin-top: 10px;
+}
