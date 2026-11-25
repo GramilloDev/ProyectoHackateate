@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Análisis con Gemini · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Análisis con Gemini</h1>
+    <p class="subtitulo">
+      Inventario, caducidades y ventas por platillo · {{ temporada_actual }}
+    </p>
+  </div>
+  <form method="post" class="form-analizar">
+    <button
+      class="btn btn-principal"
+      type="submit"
+      onclick="this.disabled=true; this.textContent='Analizando…'; this.form.submit();"
+    >
+      Analizar
+    </button>
+  </form>
+</div>
+
+{% if error %}
+  <div class="alerta alerta-error">
+    <strong>No se pudo completar el análisis.</strong>
+    <p>{{ error }}</p>
+    <p class="texto-suave">El resto de la app sigue funcionando normalmente.</p>
+  </div>
+{% endif %}
+
+{% if resultado %}
+  <section class="recomendaciones">
+    {% for seccion in resultado %}
+      <article class="tarjeta recomendacion">
+        <h2>
+          {% if seccion.clave == 'poca_salida' %}📉
+          {% elif seccion.clave == 'usar_primero' %}⏳
+          {% elif seccion.clave == 'temporada' %}🍂
+          {% else %}✨{% endif %}
+          {{ seccion.titulo }}
+        </h2>
+        <div class="texto">{{ seccion.texto }}</div>
+      </article>
+    {% endfor %}
+  </section>
+{% elif not error %}
+  <section class="tarjeta vacio">
+    <p>
+      Presiona <strong>Analizar</strong> para que Gemini revise el inventario,
+      las fechas de caducidad y las ventas por platillo.
+    </p>
+    <p class="texto-suave">La consulta puede tardar unos segundos.</p>
+  </section>
+{% endif %}
+
+<details class="tarjeta datos-gemini">
+  <summary>Ver los datos que se envían a Gemini</summary>
+
+  <h3>Inventario ({{ insumos|length }} insumos)</h3>
+  <div class="tabla-envoltura">
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Existencia</th>
+          <th>Caducidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for insumo in insumos %}
+          <tr>
+            <td>{{ insumo.nombre }}</td>
+            <td>{{ insumo.cantidad|cantidad }} {{ insumo.unidad }}</td>
+            <td>{{ insumo.caducidad|fecha }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Ventas por platillo</h3>
+  <div class="tabla-envoltura">
+    <table>
+      <thead>
+        <tr>
+          <th>Platillo</th>
+          <th>Unidades vendidas</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for venta in ventas %}
+          <tr>
+            <td>{{ venta.platillo }}</td>
+            <td>{{ venta.unidades }}</td>
+            <td>{{ venta.precio|dinero }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</details>
+{% endblock %}

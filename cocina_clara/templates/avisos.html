@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Avisos · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Avisos de caducidad</h1>
+    <p class="subtitulo">Insumos que caducan en 3 días o menos</p>
+  </div>
+  {% if session.rol == 'empleado' %}
+    <a class="btn btn-principal" href="{{ url_for('nuevo_gasto') }}">Reportar gasto</a>
+  {% endif %}
+</div>
+
+{% if avisos %}
+  <div class="alerta alerta-warning">
+    Usa primero los productos próximos a vencer.
+    {% if session.rol in ['empleado', 'encargado'] %}
+      Separa desde el origen vegetales, frutas o pan limpios, sin moho ni químicos, y coordina retiros frecuentes para ganadería. Enjuaga y aplasta las latas limpias y llévalas por lote a recicladoras.
+    {% endif %}
+  </div>
+
+  {% for grupo in categorias %}
+    <h2>{{ grupo.nombre }}</h2>
+    <section class="avisos">
+      {% for insumo in grupo.insumos %}
+        <article class="tarjeta aviso {{ 'aviso-caducado' if insumo.dias < 0 else '' }}">
+          <div class="aviso-cabeza">
+            <h2>{{ insumo.nombre }}</h2>
+            <span class="badge badge-{{ insumo.clase }}">{{ insumo.estado }}</span>
+          </div>
+          <p>
+            Quedan <strong>{{ insumo.cantidad|cantidad }} {{ insumo.unidad }}</strong> ·
+            caduca el <strong>{{ insumo.caducidad|fecha }}</strong>
+          </p>
+          <p class="aviso-dias">
+            {% if insumo.dias < 0 %}
+              Caducó hace {{ -insumo.dias }} día(s).
+            {% elif insumo.dias == 0 %}
+              Caduca hoy. Úsalo de inmediato.
+            {% else %}
+              Le quedan {{ insumo.dias }} día(s).
+            {% endif %}
+          </p>
+          {% if insumo.dias < 0 %}
+            <p class="texto-error"><strong>No lo uses.</strong> Sepáralo y avísale al encargado.</p>
+          {% else %}
+            <p>Prioridad de uso: prepara platillos o promociones que lo aprovechen primero.</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </section>
+  {% endfor %}
+{% else %}
+  <section class="tarjeta vacio">
+    <p>No hay insumos próximos a caducar. Todo en orden.</p>
+  </section>
+{% endif %}
+{% endblock %}

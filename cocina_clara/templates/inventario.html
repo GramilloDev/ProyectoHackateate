@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Inventario · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Inventario</h1>
+    <p class="subtitulo">Existencias, caducidad y reabastecimiento por categoría</p>
+  </div>
+  <div class="acciones">
+    <a class="btn" href="{{ url_for('reporte') }}">Generar reporte</a>
+    <a class="btn btn-principal" href="{{ url_for('nuevo_insumo') }}">Registrar insumo</a>
+  </div>
+</div>
+
+{% for grupo in categorias %}
+  <section class="tarjeta">
+    <h2>{{ grupo.nombre }}</h2>
+    <div class="tabla-envoltura">
+      <table>
+        <thead>
+          <tr><th>Producto</th><th>Existencia</th><th>Gastado</th><th>Caducidad</th><th>Reabastecer</th><th>Invertido</th><th>Estado</th></tr>
+        </thead>
+        <tbody>
+          {% for insumo in grupo.insumos %}
+            <tr>
+              <td><strong>{{ insumo.nombre }}</strong></td>
+              <td>{{ insumo.cantidad|cantidad }} {{ insumo.unidad }}</td>
+              <td>{{ insumo.gastado|cantidad }} {{ insumo.unidad }}</td>
+              <td>{{ insumo.caducidad|fecha }}</td>
+              <td>{{ insumo.reabasto_fecha|fecha }}</td>
+              <td>{{ insumo.dinero_invertido|dinero }}</td>
+              <td><span class="badge badge-{{ insumo.clase }}">{{ insumo.estado }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% else %}
+  <section class="tarjeta vacio"><p>Todavía no hay insumos. Registra el primero.</p></section>
+{% endfor %}
+{% endblock %}

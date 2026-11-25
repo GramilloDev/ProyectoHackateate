@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Reportar gasto · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Reportar gasto</h1>
+    <p class="subtitulo">Registra el insumo que usaste; se descuenta del inventario</p>
+  </div>
+  <a class="btn" href="{{ url_for('avisos') }}">Ver avisos</a>
+</div>
+
+<section class="tarjeta tarjeta-angosta">
+  <form method="post" class="formulario">
+    <label for="insumo_id">Insumo</label>
+    <select id="insumo_id" name="insumo_id" required>
+      <option value="" disabled {% if not form.insumo_id %}selected{% endif %}>Selecciona un insumo</option>
+      {% for insumo in insumos %}
+        <option
+          value="{{ insumo.id }}"
+          {% if form.insumo_id == insumo.id|string %}selected{% endif %}
+          {% if insumo.cantidad <= 0 %}disabled{% endif %}
+        >
+          {{ insumo.nombre }} — {{ insumo.cantidad|cantidad }} {{ insumo.unidad }}
+          (caduca {{ insumo.caducidad|fecha }}){% if insumo.cantidad <= 0 %} — AGOTADO{% endif %}
+        </option>
+      {% endfor %}
+    </select>
+
+    <label for="cantidad">Cantidad usada</label>
+    <input
+      id="cantidad"
+      name="cantidad"
+      type="text"
+      inputmode="decimal"
+      placeholder="Ej. 1.5"
+      value="{{ form.cantidad }}"
+      required
+    >
+    <p class="ayuda">Debe ser mayor que cero y no superar lo que hay en inventario.</p>
+
+    <button class="btn btn-principal" type="submit">Registrar gasto</button>
+  </form>
+
+  <div class="alerta alerta-info">
+    Si el insumo ya caducó, la app no descontará nada y te mostrará un aviso.
+  </div>
+</section>
+{% endblock %}

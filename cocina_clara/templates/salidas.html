@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Salidas y recuperación · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Salidas y recuperación</h1>
+    <p class="subtitulo">Registra el destino de cada insumo para distinguir consumo, recuperación y pérdida</p>
+  </div>
+</div>
+
+<section class="tarjeta tarjeta-angosta">
+  <h2>Registrar salida</h2>
+  <form method="post" class="formulario">
+    <label for="insumo_id">Insumo</label>
+    <select id="insumo_id" name="insumo_id" required>
+      <option value="">Selecciona un insumo</option>
+      {% for insumo in insumos %}
+        <option value="{{ insumo.id }}" {% if form.insumo_id == insumo.id|string %}selected{% endif %}>
+          {{ insumo.nombre }} — {{ insumo.cantidad|cantidad }} {{ insumo.unidad }} ({{ insumo.categoria }})
+        </option>
+      {% endfor %}
+    </select>
+
+    <label for="tipo">Destino</label>
+    <select id="tipo" name="tipo" required>
+      {% for destino, etiqueta in destinos.items() %}
+        <option value="{{ destino }}" {% if form.tipo == destino %}selected{% endif %}>{{ etiqueta }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="cantidad">Cantidad</label>
+    <input id="cantidad" name="cantidad" type="text" inputmode="decimal" value="{{ form.cantidad }}" required>
+    <p class="ayuda">No puede superar las existencias. Los insumos caducados no se pueden usar ni promocionar.</p>
+
+    <label for="monto_recuperado">Dinero recuperado</label>
+    <input id="monto_recuperado" name="monto_recuperado" type="text" inputmode="decimal" value="{{ form.monto_recuperado }}" required>
+    <p class="ayuda">Usa 0 si no hubo ingreso. Aplica a promociones, ganadería y reciclaje.</p>
+
+    <button class="btn btn-principal" type="submit">Guardar salida</button>
+  </form>
+</section>
+
+<div class="alerta alerta-info">
+  Separa desde el origen los residuos orgánicos limpios (vegetales, frutas o pan sin moho ni químicos) y coordina retiros frecuentes para ganadería. Enjuaga y aplasta las latas limpias antes de acumularlas por lote para reciclaje.
+</div>
+
+<section class="tarjeta">
+  <h2>Registro de salidas</h2>
+  {% if salidas %}
+    <div class="tabla-envoltura">
+      <table>
+        <thead><tr><th>Fecha</th><th>Producto</th><th>Destino</th><th>Cantidad</th><th>Recuperado</th><th>Autor</th></tr></thead>
+        <tbody>
+          {% for salida in salidas %}
+            <tr>
+              <td>{{ salida.fecha|fecha }}</td>
+              <td>{{ salida.insumo }}</td>
+              <td>{{ salida.tipo|destino }}</td>
+              <td>{{ salida.cantidad|cantidad }} {{ salida.unidad }}</td>
+              <td>{{ salida.monto_recuperado|dinero }}</td>
+              <td>{{ salida.registrado_por }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay salidas registradas.</p>
+  {% endif %}
+</section>
+{% endblock %}

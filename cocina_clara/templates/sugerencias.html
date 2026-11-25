@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Sugerencias · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Sugerencias para el turno</h1>
+    <p class="subtitulo">Productos para usar primero, ideas de platillos y promociones</p>
+  </div>
+  <form method="post" class="form-analizar">
+    <button class="btn btn-principal" type="submit">Obtener sugerencias</button>
+  </form>
+</div>
+
+{% if error %}
+  <div class="alerta alerta-error"><strong>No se pudieron cargar las sugerencias.</strong><p>{{ error }}</p></div>
+{% endif %}
+
+{% if resultado %}
+  <section class="recomendaciones">
+    {% for seccion in resultado %}
+      <article class="tarjeta recomendacion">
+        <h2>{{ seccion.titulo }}</h2>
+        <div class="texto">{{ seccion.texto }}</div>
+      </article>
+    {% endfor %}
+  </section>
+{% elif not error %}
+  <section class="tarjeta vacio">
+    <p>Presiona “Obtener sugerencias” para revisar qué usar primero, qué preparar hoy o esta semana y qué puede ir a promoción.</p>
+  </section>
+{% endif %}
+
+{% endblock %}

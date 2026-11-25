@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Entrar · Eco Menu{% endblock %}
+
+{% block content %}
+<section class="login-envoltura">
+  <div class="tarjeta login">
+    <img class="logo-login" src="{{ url_for('static', filename='LOGO.png') }}" alt="Eco Menu">
+
+    <form method="post" class="formulario">
+      <label for="usuario">Usuario</label>
+      <input id="usuario" name="usuario" type="text" autocomplete="username" required autofocus>
+
+      <label for="clave">Contraseña</label>
+      <input id="clave" name="clave" type="password" autocomplete="current-password" required>
+
+      <button class="btn btn-principal" type="submit">Entrar</button>
+    </form>
+
+    <div class="credenciales">
+      <p class="mini-titulo">Usuarios de prueba</p>
+      <ul>
+        <li><button class="demo-user" type="button" data-usuario="dueño" data-clave="dueno123"><strong>Dueño:</strong> <code>dueño</code> / <code>dueno123</code></button></li>
+        <li><button class="demo-user" type="button" data-usuario="encargado" data-clave="encargado123"><strong>Encargado:</strong> <code>encargado</code> / <code>encargado123</code></button></li>
+        <li><button class="demo-user" type="button" data-usuario="empleado" data-clave="empleado123"><strong>Empleado:</strong> <code>empleado</code> / <code>empleado123</code></button></li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

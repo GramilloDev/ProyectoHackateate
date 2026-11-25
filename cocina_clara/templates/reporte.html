@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Reporte de insumos · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Reporte de insumos</h1>
+    <p class="subtitulo">Existencias, salidas, ingresos recuperados y pérdidas netas</p>
+  </div>
+  {% if session.rol == 'encargado' %}
+    <a class="btn" href="{{ url_for('inventario') }}">Volver al inventario</a>
+  {% else %}
+    <a class="btn" href="{{ url_for('panel_dueno') }}">Volver al inicio</a>
+  {% endif %}
+</div>
+
+<section class="tarjetas">
+  <article class="tarjeta cifra cifra-perdida"><span class="etiqueta">Pérdida bruta</span><strong>{{ resumen.perdida_bruta|dinero }}</strong></article>
+  <article class="tarjeta cifra cifra-recuperacion"><span class="etiqueta">Recuperado</span><strong>{{ resumen.recuperado|dinero }}</strong><small>Promociones, ganadería y reciclaje</small></article>
+  <article class="tarjeta cifra cifra-ganancia"><span class="etiqueta">Pérdida neta estimada</span><strong>{{ resumen.perdida_neta|dinero }}</strong><small>Pérdida bruta menos recuperaciones</small></article>
+  <article class="tarjeta cifra cifra-consumo"><span class="etiqueta">Ganadería / reciclaje</span><strong>{{ resumen.kilos_ganaderia }} kg / {{ resumen.lotes_reciclados }}</strong><small>Kilos orgánicos / lotes de latas</small></article>
+</section>
+
+<p class="nota">La pérdida bruta incluye el valor del inventario caducado aún disponible y las salidas registradas como pérdida. La pérdida neta resta el dinero recuperado.</p>
+
+<section class="tarjeta">
+  <h2>Existencias</h2>
+  {% for grupo in categorias %}
+    <h3>{{ grupo.nombre }}</h3>
+    <div class="tabla-envoltura">
+      <table>
+        <thead><tr><th>Producto</th><th>Existencia</th><th>Gastos registrados</th><th>Caducidad</th><th>Estado</th></tr></thead>
+        <tbody>
+          {% for insumo in grupo.insumos %}
+            <tr>
+              <td>{{ insumo.nombre }}</td>
+              <td>{{ insumo.cantidad|cantidad }} {{ insumo.unidad }}</td>
+              <td>{{ insumo.gastado|cantidad }} {{ insumo.unidad }}</td>
+              <td>{{ insumo.caducidad|fecha }}</td>
+              <td><span class="badge badge-{{ insumo.clase }}">{{ insumo.estado }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay insumos registrados.</p>
+  {% endfor %}
+</section>
+
+<section class="tarjeta">
+  <h2>Salidas y recuperación</h2>
+  <p>Consumo y pérdidas se muestran por separado de promociones, venta orgánica y reciclaje.</p>
+  {% if salidas %}
+    <div class="tabla-envoltura">
+      <table>
+        <thead><tr><th>Fecha</th><th>Insumo</th><th>Destino</th><th>Cantidad</th><th>Recuperado</th><th>Autor</th></tr></thead>
+        <tbody>
+          {% for salida in salidas %}
+            <tr><td>{{ salida.fecha|fecha }}</td><td>{{ salida.insumo }}</td><td>{{ salida.tipo|destino }}</td><td>{{ salida.cantidad|cantidad }} {{ salida.unidad }}</td><td>{{ salida.monto_recuperado|dinero }}</td><td>{{ salida.registrado_por }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay salidas registradas.</p>
+  {% endif %}
+</section>
+
+{% if session.rol == 'encargado' %}
+  <section class="tarjeta">
+    <h2>Enviar resumen al dueño</h2>
+    <p>Elige Gemini o escribe el texto. Puedes editar el borrador antes de enviarlo.</p>
+    <form method="post" class="formulario">
+      <label class="opcion-inline">
+        <input type="radio" name="modo" value="gemini" {% if modo_preparado == 'gemini' %}checked{% endif %}>
+        Gemini redacta el resumen
+      </label>
+      <label class="opcion-inline">
+        <input type="radio" name="modo" value="manual" {% if modo_preparado != 'gemini' %}checked{% endif %}>
+        Lo escribo yo / modifico el borrador
+      </label>
+      <label for="texto">Resumen (máximo 2000 caracteres)</label>
+      <textarea id="texto" name="texto" maxlength="2000" rows="5">{{ texto_preparado }}</textarea>
+      <div class="acciones">
+        <button class="btn" type="submit" name="accion" value="preparar">Redactar con Gemini</button>
+        <button class="btn btn-principal" type="submit" name="accion" value="enviar">Enviar</button>
+      </div>
+    </form>
+  </section>
+{% endif %}
+
+<div class="alerta alerta-info">
+  Separa desde el origen vegetales, frutas o pan limpios, sin moho ni químicos, y coordina retiros frecuentes para ganadería. Enjuaga y aplasta las latas limpias y llévalas por lote a recicladoras.
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Eco Menu{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="{{ url_for('inicio') }}">
+      <img class="logo-marca" src="{{ url_for('static', filename='LOGO.png') }}" alt="Eco Menu">
+    </a>
+
+    {% if session.usuario %}
+      <nav class="menu">
+        {% if session.rol == 'dueno' %}
+          <a href="{{ url_for('panel_dueno') }}">Inicio</a>
+          <a href="{{ url_for('reporte') }}">Reporte</a>
+          <a href="{{ url_for('analisis') }}">Análisis con Gemini</a>
+          <a href="{{ url_for('salidas') }}">Salidas y recuperación</a>
+        {% elif session.rol == 'encargado' %}
+          <a href="{{ url_for('inventario') }}">Inventario</a>
+          <a href="{{ url_for('nuevo_insumo') }}">Registrar insumo</a>
+          <a href="{{ url_for('avisos') }}">Avisos</a>
+          <a href="{{ url_for('reporte') }}">Reporte</a>
+          <a href="{{ url_for('salidas') }}">Salidas y recuperación</a>
+        {% elif session.rol == 'empleado' %}
+          <a href="{{ url_for('avisos') }}">Avisos</a>
+          <a href="{{ url_for('nuevo_gasto') }}">Reportar gasto</a>
+          <a href="{{ url_for('sugerencias') }}">Sugerencias</a>
+        {% endif %}
+      </nav>
+      <div class="sesion">
+        <span>{{ session.nombre }}</span>
+        <a href="{{ url_for('logout') }}">Salir</a>
+      </div>
+    {% endif %}
+  </header>
+
+  <main>
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+      {% if mensajes %}
+        <div class="mensajes">
+          {% for categoria, mensaje in mensajes %}
+            <div class="alerta alerta-{{ categoria }}">{{ mensaje }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="pie">
+    Eco Menu
+  </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".demo-user").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.getElementById("usuario").value = button.dataset.usuario;
+          document.getElementById("clave").value = button.dataset.clave;
+          document.getElementById("usuario").focus();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

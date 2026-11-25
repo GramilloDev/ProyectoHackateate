@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Inicio · Dueño{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Panel del dueño</h1>
+    <p class="subtitulo">Inventario, ventas y recuperación de desperdicio</p>
+  </div>
+  <a class="btn btn-principal" href="{{ url_for('analisis') }}">Análisis con Gemini</a>
+</div>
+
+<section class="tarjetas">
+  <article class="tarjeta cifra cifra-inversion">
+    <span class="etiqueta">Inversión inicial</span>
+    <strong>{{ resumen.inversion|dinero }}</strong>
+    <small>Valor de los insumos comprados</small>
+  </article>
+  <article class="tarjeta cifra cifra-ingresos">
+    <span class="etiqueta">Ingresos por ventas</span>
+    <strong>{{ resumen.ingresos|dinero }}</strong>
+    <small>Ventas de ejemplo por platillo</small>
+  </article>
+  <article class="tarjeta cifra cifra-consumo">
+    <span class="etiqueta">Insumos usados</span>
+    <strong>{{ resumen.consumo|dinero }}</strong>
+    <small>Gastos registrados por el personal</small>
+  </article>
+  <article class="tarjeta cifra cifra-perdida">
+    <span class="etiqueta">Pérdida neta estimada</span>
+    <strong>{{ recuperacion.perdida_neta|dinero }}</strong>
+    <small>Bruta (caducado y pérdidas): {{ recuperacion.perdida_bruta|dinero }}</small>
+  </article>
+  <article class="tarjeta cifra cifra-recuperacion">
+    <span class="etiqueta">Dinero recuperado</span>
+    <strong>{{ recuperacion.recuperado|dinero }}</strong>
+    <small>Recuperación registrada</small>
+  </article>
+  <article class="tarjeta cifra cifra-ganancia">
+    <span class="etiqueta">Ganancia estimada</span>
+    <strong>{{ resumen.ganancia|dinero }}</strong>
+    <small>Ingresos − insumos usados − pérdidas</small>
+  </article>
+</section>
+
+<section class="tarjeta">
+  <div class="encabezado">
+    <div>
+      <h2>Insumos que requieren atención</h2>
+      <p class="subtitulo">Caducan en 3 días o menos, o ya caducaron.</p>
+    </div>
+    <span class="contador">{{ avisos|length }}</span>
+  </div>
+
+  {% if avisos %}
+    {% for grupo in categorias %}
+      {% set del_grupo = grupo.insumos|selectattr('dias', 'le', 3)|list %}
+      {% if del_grupo %}
+        <h3>{{ grupo.nombre }}</h3>
+        <ul class="lista-avisos">
+          {% for insumo in del_grupo %}
+            <li>
+              <span class="punto punto-{{ insumo.clase }}"></span>
+              <strong>{{ insumo.nombre }}</strong>
+              <span>
+                {{ insumo.cantidad|cantidad }} {{ insumo.unidad }} · {{ insumo.caducidad|fecha }}
+                {% if insumo.dias < 0 %}· caducado{% elif insumo.dias == 0 %}· caduca hoy{% else %}· {{ insumo.dias }} día(s){% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% endfor %}
+  {% else %}
+    <p class="texto-suave">No hay insumos próximos a caducar. Todo en orden.</p>
+  {% endif %}
+</section>
+
+<section class="tarjeta">
+  <h2>Inventario por categoría</h2>
+  {% for grupo in categorias %}
+    <h3>{{ grupo.nombre }}</h3>
+    <div class="tabla-envoltura">
+      <table>
+        <thead><tr><th>Producto</th><th>Existencia</th><th>Caducidad</th><th>Compra</th><th>Reabastecer</th><th>Invertido</th></tr></thead>
+        <tbody>
+          {% for insumo in grupo.insumos %}
+            <tr>
+              <td>{{ insumo.nombre }}</td>
+              <td>{{ insumo.cantidad|cantidad }} {{ insumo.unidad }}</td>
+              <td>{{ insumo.caducidad|fecha }}</td>
+              <td>{{ insumo.fecha_compra|fecha }}</td>
+              <td>{{ insumo.reabasto_fecha|fecha }}</td>
+              <td>{{ insumo.dinero_invertido|dinero }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay insumos registrados.</p>
+  {% endfor %}
+</section>
+
+<section class="tarjeta">
+  <h2>Resúmenes del encargado</h2>
+  {% if reportes %}
+    {% for reporte in reportes %}
+      <article class="reporte-recibido {{ 'reporte-no-leido' if not reporte.leido else '' }}">
+        <div class="encabezado">
+          <strong>{{ reporte.autor }} · {{ reporte.fecha|fecha }}</strong>
+          <span class="badge {{ 'badge-aviso' if not reporte.leido else 'badge-ok' }}">{{ 'No leído' if not reporte.leido else 'Leído' }}</span>
+        </div>
+        <p>{{ reporte.texto }}</p>
+        {% if not reporte.leido %}
+          <form method="post" action="{{ url_for('marcar_reporte_leido', reporte_id=reporte.id) }}">
+            <button class="btn" type="submit">Marcar como leído</button>
+          </form>
+        {% endif %}
+      </article>
+    {% endfor %}
+  {% else %}
+    <p>Todavía no hay resúmenes recibidos.</p>
+  {% endif %}
+</section>
+
+<section class="tarjeta">
+  <h2>Reporte y análisis</h2>
+  <p class="texto-suave">
+    Consulta existencias, gastos registrados y el estado de cada insumo.
+  </p>
+  <div class="acciones">
+    <a class="btn" href="{{ url_for('reporte') }}">Ver reporte de insumos</a>
+    <a class="btn btn-principal" href="{{ url_for('analisis') }}">Analizar con Gemini</a>
+    <a class="btn" href="{{ url_for('salidas') }}">Registrar salida</a>
+  </div>
+</section>
+
+{% endblock %}

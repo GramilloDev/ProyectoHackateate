@@ -1,0 +1,11 @@
+# Clave de Gemini: nunca se sube al repositorio
+.env
+
+# Base de datos local generada al arrancar
+cocina_clara.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
