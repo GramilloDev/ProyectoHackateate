@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Registrar insumo · Eco Menu{% endblock %}
+
+{% block content %}
+<div class="encabezado">
+  <div>
+    <h1>Registrar insumo</h1>
+    <p class="subtitulo">Producto, categoría, caducidad y fechas de abastecimiento</p>
+  </div>
+  <a class="btn" href="{{ url_for('inventario') }}">Volver al inventario</a>
+</div>
+
+<section class="tarjeta tarjeta-angosta">
+  <form method="post" class="formulario">
+    <label for="nombre">Producto</label>
+    <input
+      id="nombre"
+      name="nombre"
+      type="text"
+      maxlength="80"
+      placeholder="Ej. Lechuga romana"
+      value="{{ form.nombre }}"
+      required
+    >
+
+    <label for="cantidad">Cantidad</label>
+    <input
+      id="cantidad"
+      name="cantidad"
+      type="text"
+      inputmode="decimal"
+      placeholder="Ej. 2.5"
+      value="{{ form.cantidad }}"
+      required
+    >
+    <p class="ayuda">Debe ser mayor que cero. Puedes usar punto o coma decimal.</p>
+
+    <label for="unidad">Unidad</label>
+    <select id="unidad" name="unidad" required>
+      {% for unidad in unidades %}
+        <option value="{{ unidad }}" {% if form.unidad == unidad %}selected{% endif %}>{{ unidad }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="categoria">Categoría</label>
+    <select id="categoria" name="categoria" required>
+      {% for categoria in categorias %}
+        <option value="{{ categoria }}" {% if form.categoria == categoria %}selected{% endif %}>{{ categoria }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="caducidad">Fecha de caducidad</label>
+    <input
+      id="caducidad"
+      name="caducidad"
+      type="date"
+      min="{{ hoy }}"
+      value="{{ form.caducidad }}"
+      required
+    >
+    <p class="ayuda">No se aceptan fechas que ya pasaron.</p>
+
+    <label for="dinero_invertido">Dinero invertido</label>
+    <input id="dinero_invertido" name="dinero_invertido" type="text" inputmode="decimal" value="{{ form.dinero_invertido }}" required>
+
+    <label for="fecha_compra">Fecha de compra</label>
+    <input id="fecha_compra" name="fecha_compra" type="date" max="{{ hoy }}" value="{{ form.fecha_compra }}" required>
+
+    <label for="reabasto_fecha">Fecha en que se necesita reabastecer</label>
+    <input id="reabasto_fecha" name="reabasto_fecha" type="date" min="{{ form.fecha_compra }}" value="{{ form.reabasto_fecha }}">
+    <p class="ayuda">Opcional; no puede ser anterior a la fecha de compra.</p>
+
+    <button class="btn btn-principal" type="submit">Guardar insumo</button>
+  </form>
+</section>
+{% endblock %}
