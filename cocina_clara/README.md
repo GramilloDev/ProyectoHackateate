@@ -26,6 +26,14 @@ Abre <http://127.0.0.1:5000>. Si el puerto está ocupado, usa
 conserva para no perder registros; las nuevas tablas y columnas se agregan
 automáticamente al iniciar.
 
+## Demo temporal con QR
+
+En Windows, ejecuta `.\start_demo.ps1` desde esta carpeta. El script inicia la
+app sin modo depuración y crea un enlace temporal de Cloudflare para compartir.
+La URL cambia cada vez que se inicia y deja de funcionar al cerrar el script,
+apagar la laptop o perder la conexión. Los datos de esta demo se guardan en
+`cocina_clara_demo.db`, separado de la base de datos normal y excluido de Git.
+
 Ejecuta las pruebas con:
 
 ```powershell

@@ -3,6 +3,7 @@
 
 # Base de datos local generada al arrancar
 cocina_clara.db
+cocina_clara_demo.db
 
 # Python
 __pycache__/
